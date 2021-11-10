@@ -257,6 +257,12 @@ def mqtt_message(client, userdata, msg):
         print("JSON decode error: " + msg.payload.decode())
         return
 
+    except:
+        print("Unhandled exception")
+        print("JSON: " + msg.payload.decode())
+        return
+
+
 
 def sanitize(text):
     """Sanitize a name for Graphite/MQTT use."""
