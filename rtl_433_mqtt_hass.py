@@ -296,6 +296,7 @@ def publish_config(mqttc, topic, manmodel, instance, channel, mapping):
     config["name"] = " ".join([manmodel.replace("-", " "), instance, object_suffix])
     config["unique_id"] = "".join(["rtl433", device_type, instance, object_suffix])
     config["availability_topic"] = "/".join([MQTT_TOPIC, "status"])
+    config["force_update"] = True
 
     # add Home Assistant device info
 
