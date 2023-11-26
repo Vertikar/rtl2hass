@@ -310,7 +310,7 @@ def publish_config(mqttc, topic, manmodel, instance, channel, mapping):
     config["device"] = device
     
     mqttc.publish(path, json.dumps(config))
-    print(path, " : ", json.dumps(config))
+    # print(path, " : ", json.dumps(config))
 
 
 def bridge_event_to_hass(mqttc, topic, data):
