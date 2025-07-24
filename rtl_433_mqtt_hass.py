@@ -257,6 +257,12 @@ def mqtt_message(client, userdata, msg):
         print("JSON decode error: " + msg.payload.decode())
         return
 
+    except:
+        print("Unhandled exception")
+        print("JSON: " + msg.payload.decode())
+        return
+
+
 
 def sanitize(text):
     """Sanitize a name for Graphite/MQTT use."""
@@ -290,6 +296,7 @@ def publish_config(mqttc, topic, manmodel, instance, channel, mapping):
     config["name"] = " ".join([manmodel.replace("-", " "), instance, object_suffix])
     config["unique_id"] = "".join(["rtl433", device_type, instance, object_suffix])
     config["availability_topic"] = "/".join([MQTT_TOPIC, "status"])
+    config["force_update"] = True
 
     # add Home Assistant device info
 
@@ -302,8 +309,10 @@ def publish_config(mqttc, topic, manmodel, instance, channel, mapping):
     device["manufacturer"] = manufacturer
     config["device"] = device
     
-    mqttc.publish(path, json.dumps(config), qos=0, retain=True)
-    print(path, " : ", json.dumps(config))
+
+    mqttc.publish(path, json.dumps(config))
+    # print(path, " : ", json.dumps(config))
+
 
 
 def bridge_event_to_hass(mqttc, topic, data):
@@ -314,14 +323,15 @@ def bridge_event_to_hass(mqttc, topic, data):
         return
     manmodel = sanitize(data["model"])
 
-    if "id" in data:
-        instance = str(data["id"])
-    if not instance:
+    if "id" not in data:
         # no unique device identifier
         return
+    instance = str(data["id"])
 
-    if "channel" in data:
-        channel = str(data["channel"])
+    if "channel" not in data:
+        # missing channel
+        return
+    channel = str(data["channel"])
 
     # check if ID is whitelisted
     # need code here to parse list of whitelisted IDs from environment variable
